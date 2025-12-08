@@ -1,0 +1,21 @@
+# Files to ignore during Render deployment
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.db
+*.sqlite
+*.sqlite3
+venv/
+env/
+ENV/
+.venv
+*.log
+.DS_Store
+.git/
+.vscode/
+.idea/
+
