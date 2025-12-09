@@ -25,6 +25,23 @@ except Exception as e:
     raise
 
 
+@app.route("/", methods=["GET"])
+def root():
+    """Root endpoint."""
+    return jsonify({
+        "service": "visa-consultant-ai",
+        "status": "running",
+        "endpoints": {
+            "health": "/health",
+            "generate-reply": "/generate-reply",
+            "improve-ai": "/improve-ai",
+            "improve-ai-manually": "/improve-ai-manually",
+            "parse-conversations": "/parse-conversations",
+            "load-training-data": "/load-training-data"
+        }
+    })
+
+
 @app.route("/health", methods=["GET"])
 def health():
     """Health check endpoint."""
@@ -58,6 +75,10 @@ def generate_reply():
         
         client_sequence = data.get("clientSequence", [])
         chat_history = data.get("chatHistory", [])
+        
+        # Handle case where clientSequence is a string instead of a list
+        if isinstance(client_sequence, str):
+            client_sequence = [client_sequence]
         
         if not client_sequence:
             return jsonify({"error": "clientSequence is required"}), 400
@@ -109,6 +130,10 @@ def improve_ai():
         client_sequence = data.get("clientSequence", [])
         chat_history = data.get("chatHistory", [])
         consultant_reply = data.get("consultantReply", "")
+        
+        # Handle case where clientSequence is a string instead of a list
+        if isinstance(client_sequence, str):
+            client_sequence = [client_sequence]
         
         if not client_sequence:
             return jsonify({"error": "clientSequence is required"}), 400

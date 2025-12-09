@@ -12,21 +12,10 @@ class GeminiClient:
 
     def __init__(self):
         genai.configure(api_key=GEMINI_API_KEY)
-
-        # 🔥 FIXED — use a real AVAILABLE Gemini model
-        # If GEMINI_MODEL is invalid, override it safely
-        allowed_models = [
-            "gemini-1.5-flash",
-            "gemini-1.5-pro",
-            "gemini-pro",
-            "gemini-1.0-pro",
-            "gemma-2-9b-it"
-        ]
-
-        # ensure fallback if wrong model was set in config.py
-        model_to_use = GEMINI_MODEL if GEMINI_MODEL in allowed_models else "gemini-1.5-flash"
-        self.model_name = model_to_use
-
+        
+        # Use the model from config, with fallback to gemini-pro
+        # gemini-pro is the most stable and widely available model
+        self.model_name = GEMINI_MODEL if GEMINI_MODEL else "gemini-pro"
         self.model = genai.GenerativeModel(self.model_name)
 
 

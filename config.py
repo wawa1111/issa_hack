@@ -6,7 +6,7 @@ import os
 
 # Gemini Configuration
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBh2WrdSXTMW6Mrc0ZGz75sWOsgeP3GMa4")
-GEMINI_MODEL = "gemini-2.0-flash-thinking-exp-01-21"
+GEMINI_MODEL = "gemini-pro"
 
 # Supabase Configuration
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
