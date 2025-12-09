@@ -73,11 +73,13 @@ Set the following environment variables:
 
 **For Local Development:**
 ```bash
-export GEMINI_API_KEY=AIzaSyBh2WrdSXTMW6Mrc0ZGz75sWOsgeP3GMa4
+export GEMINI_API_KEY=your_gemini_api_key_here
 export SUPABASE_URL=https://your-project.supabase.co
 export SUPABASE_ANON_KEY=your_anon_key_here
 export FLASK_DEBUG=False
 ```
+
+**Important:** Never hardcode API keys in the code. Always use environment variables.
 
 **For Render Deployment:**
 Set these in the Render dashboard under Environment Variables (no .env file needed).

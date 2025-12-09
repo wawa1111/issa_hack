@@ -47,8 +47,8 @@ Use these exact settings:
 Add these three environment variables in the Render dashboard:
 
 1. **GEMINI_API_KEY**
-   - Value: Your Gemini API key
-   - Example: `AIzaSyBh2WrdSXTMW6Mrc0ZGz75sWOsgeP3GMa4`
+   - Value: Your Gemini API key (get it from https://makersuite.google.com/app/apikey)
+   - **Important:** Never commit API keys to git. Only set them in Render dashboard.
 
 2. **SUPABASE_URL**
    - Value: Your Supabase project URL

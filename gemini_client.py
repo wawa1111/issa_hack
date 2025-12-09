@@ -11,11 +11,14 @@ class GeminiClient:
     """Wrapper for Gemini API interactions."""
 
     def __init__(self):
+        # API key is validated in config.py - should never be None here
+        if not GEMINI_API_KEY:
+            raise ValueError("GEMINI_API_KEY is not set. This should have been caught in config.py")
+        
         genai.configure(api_key=GEMINI_API_KEY)
         
-        # Use the model from config, with fallback to gemini-pro
-        # gemini-pro is the most stable and widely available model
-        self.model_name = GEMINI_MODEL if GEMINI_MODEL else "gemini-pro"
+        # Use the model from config
+        self.model_name = GEMINI_MODEL if GEMINI_MODEL else "gemini-1.5-flash-latest"
         self.model = genai.GenerativeModel(self.model_name)
 
 
