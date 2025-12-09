@@ -9,6 +9,175 @@ import json
 
 class GeminiClient:
     """Wrapper for Gemini API interactions."""
+
+    def __init__(self):
+        genai.configure(api_key=GEMINI_API_KEY)
+
+        # 🔥 FIXED — use a real AVAILABLE Gemini model
+        # If GEMINI_MODEL is invalid, override it safely
+        allowed_models = [
+            "gemini-1.5-flash",
+            "gemini-1.5-pro",
+            "gemini-pro",
+            "gemini-1.0-pro",
+            "gemma-2-9b-it"
+        ]
+
+        # ensure fallback if wrong model was set in config.py
+        model_to_use = GEMINI_MODEL if GEMINI_MODEL in allowed_models else "gemini-1.5-flash"
+        self.model_name = model_to_use
+
+        self.model = genai.GenerativeModel(self.model_name)
+
+
+    def generate_reply(self, system_prompt: str, client_sequence: List[str],
+                       chat_history: Optional[List[Dict]] = None) -> str:
+        """
+        Generate a reply using Gemini.
+        """
+        # Build the user message
+        user_message_parts = []
+
+        if chat_history:
+            for msg in chat_history:
+                role = "Client" if msg["direction"] == "in" else "Consultant"
+                user_message_parts.append(f"{role}: {msg['text']}")
+
+        # Add the current client sequence
+        for client_msg in client_sequence:
+            user_message_parts.append(f"Client: {client_msg}")
+
+        user_message = "\n".join(user_message_parts)
+
+        # Build full prompt
+        full_prompt = f"{system_prompt}\n\nConversation:\n{user_message}\n\nConsultant Reply:"
+
+        try:
+            response = self.model.generate_content(full_prompt)
+            reply_text = response.text.strip()
+
+            # If model returns JSON
+            if reply_text.startswith("{") and "reply" in reply_text:
+                try:
+                    parsed = json.loads(reply_text)
+                    return parsed.get("reply", reply_text)
+                except json.JSONDecodeError:
+                    pass
+
+            return reply_text
+
+        except Exception as e:
+            raise Exception(
+                f"Error generating reply with Gemini ({self.model_name}): {str(e)}"
+            )
+
+
+    def improve_prompt(self, editor_prompt: str, existing_prompt: str,
+                       client_sequence: List[str], chat_history: List[Dict],
+                       real_consultant_reply: str, predicted_ai_reply: str) -> str:
+        """
+        Auto-improve the system prompt based on differences between real vs AI reply.
+        """
+        history_text = ""
+        if chat_history:
+            for msg in chat_history:
+                role = "Client" if msg["direction"] == "in" else "Consultant"
+                history_text += f"{role}: {msg['text']}\n"
+
+        client_text = "\n".join([f"Client: {msg}" for msg in client_sequence])
+
+        improvement_request = f"""Editor Prompt:
+{editor_prompt}
+
+Current System Prompt:
+{existing_prompt}
+
+Conversation Context:
+Chat History:
+{history_text if history_text else "No previous history"}
+
+Client Sequence:
+{client_text}
+
+Real Consultant Reply:
+{real_consultant_reply}
+
+AI Predicted Reply:
+{predicted_ai_reply}
+
+Please analyze and improve the prompt. Output only JSON:
+{{ "prompt": "<updated prompt>" }}
+"""
+
+        try:
+            response = self.model.generate_content(improvement_request)
+            reply_text = response.text.strip()
+
+            if reply_text.startswith("{"):
+                try:
+                    parsed = json.loads(reply_text)
+                    return parsed.get("prompt", existing_prompt)
+                except:
+                    pass
+
+            return reply_text
+
+        except Exception as e:
+            raise Exception(
+                f"Error improving prompt with Gemini ({self.model_name}): {str(e)}"
+            )
+
+
+    def manual_prompt_update(self, editor_prompt: str, existing_prompt: str,
+                             instructions: str) -> str:
+        """
+        Developer manually updates the system prompt using the editor prompt.
+        """
+        update_request = f"""Editor Prompt:
+{editor_prompt}
+
+Current System Prompt:
+{existing_prompt}
+
+Developer Instructions:
+{instructions}
+
+Return only JSON:
+{{ "prompt": "<updated prompt>" }}
+"""
+
+        try:
+            response = self.model.generate_content(update_request)
+            reply_text = response.text.strip()
+
+            if reply_text.startswith("{"):
+                try:
+                    parsed = json.loads(reply_text)
+                    return parsed.get("prompt", existing_prompt)
+                except:
+                    pass
+
+            return reply_text
+
+        except Exception as e:
+            raise Exception(
+                f"Error manually updating prompt with Gemini ({self.model_name}): {str(e)}"
+            )
+
+
+
+##old code from cursor
+'''
+###Gemini API client wrapper###
+
+import google.generativeai as genai
+from config import GEMINI_API_KEY, GEMINI_MODEL
+from typing import List, Dict, Optional
+import json
+
+
+class GeminiClient:
+    ###Wrapper for Gemini API interactions.
     
     def __init__(self):
         genai.configure(api_key=GEMINI_API_KEY)
@@ -182,3 +351,4 @@ Please update the prompt according to the instructions. Output only the updated 
         except Exception as e:
             raise Exception(f"Error manually updating prompt with Gemini: {str(e)}")
 
+'''
