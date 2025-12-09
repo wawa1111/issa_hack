@@ -38,10 +38,9 @@ issa_hack/
 ├── prompt_manager.py       # Prompt loading and management
 ├── gemini_client.py        # Gemini API wrapper
 ├── conversation_parser.py  # Parse conversations.json format
-├── load_conversations.py   # Utility to load training data
 ├── init_supabase.sql       # SQL schema for Supabase tables
 ├── requirements.txt        # Python dependencies
-├── env_template.txt        # Environment variables template
+├── render.yaml             # Render deployment configuration
 └── README.md               # This file
 ```
 
@@ -68,22 +67,20 @@ pip install -r requirements.txt
 2. Navigate to Settings > API
 3. Copy the **Project URL** and **anon/public key**
 
-### 4. Configure Environment
+### 4. Configure Environment Variables
 
-Create a `.env` file in the project root:
+Set the following environment variables:
 
+**For Local Development:**
 ```bash
-# Gemini API Key (provided)
-GEMINI_API_KEY=AIzaSyBh2WrdSXTMW6Mrc0ZGz75sWOsgeP3GMa4
-
-# Supabase Configuration
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your_anon_key_here
-
-# Flask Configuration (optional)
-FLASK_DEBUG=False
-FLASK_PORT=5001
+export GEMINI_API_KEY=AIzaSyBh2WrdSXTMW6Mrc0ZGz75sWOsgeP3GMa4
+export SUPABASE_URL=https://your-project.supabase.co
+export SUPABASE_ANON_KEY=your_anon_key_here
+export FLASK_DEBUG=False
 ```
+
+**For Render Deployment:**
+Set these in the Render dashboard under Environment Variables (no .env file needed).
 
 ### 5. Start the Flask Server
 
@@ -91,7 +88,7 @@ FLASK_PORT=5001
 python app.py
 ```
 
-The server will start on `http://localhost:5001` (or the port specified in .env)
+The server will start on `http://localhost:5000` (or the port specified by PORT environment variable)
 
 ## API Endpoints
 
@@ -352,8 +349,9 @@ print(response.json()["updatedPrompt"])
 ## Troubleshooting
 
 ### "SUPABASE_URL and SUPABASE_ANON_KEY must be set"
-- Make sure your `.env` file exists and contains both variables
+- Make sure environment variables are set (export them or set in Render dashboard)
 - Check that the values are correct (no extra spaces)
+- For Render: Set these in the dashboard under Environment Variables
 
 ### "No system prompt found in database"
 - The system should auto-initialize prompts on first run

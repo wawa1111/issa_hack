@@ -12,7 +12,7 @@ class SupabaseDB:
     
     def __init__(self):
         if not SUPABASE_URL or not SUPABASE_ANON_KEY:
-            raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set in .env")
+            raise ValueError("SUPABASE_URL and SUPABASE_ANON_KEY must be set as environment variables")
         
         self.client: Client = create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
         self._initialize_tables()

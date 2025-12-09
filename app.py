@@ -345,6 +345,10 @@ def load_training_data():
 
 
 if __name__ == "__main__":
-    from config import FLASK_PORT, FLASK_DEBUG
-    app.run(host="0.0.0.0", port=FLASK_PORT, debug=FLASK_DEBUG)
+    import os
+    from config import FLASK_DEBUG
+    
+    # Render provides PORT environment variable
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=FLASK_DEBUG)
 
